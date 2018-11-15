@@ -1,14 +1,16 @@
 #pragma once
-
-#include "Application.h"
-#include "Renderer2D.h"
+#include <Application.h>
+#include <Texture.h>
+#include <Renderer2D.h>
 #include "Binary Tree.h"
+#include <Font.h>
 #include "TreeNode.h"
-class Application2D : public aie::Application {
+
+class CDDS_BinaryTreesApp : public aie::Application {
 public:
 
-	Application2D();
-	virtual ~Application2D();
+	CDDS_BinaryTreesApp();
+	virtual ~CDDS_BinaryTreesApp();
 
 	virtual bool startup();
 	virtual void shutdown();
@@ -19,9 +21,6 @@ public:
 protected:
 
 	aie::Renderer2D*	m_2dRenderer;
-	aie::Texture*		m_texture;
-	aie::Texture*		m_shipTexture;
-	aie::Texture*       m_sonicTexture;
 
 	aie::Font*			m_font;
 	BinaryTree m_binaryTree;
