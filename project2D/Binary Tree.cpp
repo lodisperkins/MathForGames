@@ -221,7 +221,6 @@ void BinaryTree::draw(aie::Renderer2D * renderer, TreeNode *pNode, int x, int y,
 		}
 		pNode->draw(renderer, x, y, (selected == pNode));
 	}
-
 }
 
 BinaryTree::BinaryTree()

@@ -1,3 +1,4 @@
+#define GLM_FORCE_SWIZZLE
 #include "Application3D.h"
 #include "Gizmos.h"
 #include "Input.h"
@@ -44,15 +45,23 @@ void Application3D::update(float deltaTime) {
 	float time = getTime();
 
 	// rotate camera
-	m_viewMatrix = glm::lookAt(vec3(glm::sin(time) * 10, 10, glm::cos(time) * 10),
-							   vec3(0), vec3(0, 1, 0));
-
+	m_viewMatrix = glm::lookAt(vec3(0,3,10),vec3(0), vec3(0, 1, 0));
+vec4 green(.5f, 0.5f, 0, 1);
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
-
-	// draw a simple grid with gizmos
+	mat4 tank = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+	mat4* tankptr = &tank;
+	mat4 moveright=
+	mat4 cannon = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+	mat4* ptrcannon = &rotate(cannon, 90.f, vec3(0, 0, 1));
+	Gizmos::addAABBFilled(vec3(0), vec3(2,.5,2), green,tankptr);
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
+	Gizmos::addSphere(vec3(0,.8,0), 1.5, 15, 15,green);
+	Gizmos::addCylinderFilled(vec3(1.5, 1.7, 0), .3, 1, 15, green, ptrcannon);
+	// draw a simple grid with gizmos
+
+	
 	for (int i = 0; i < 21; ++i) {
 		Gizmos::addLine(vec3(-10 + i, 0, 10),
 						vec3(-10 + i, 0, -10),
@@ -62,28 +71,12 @@ void Application3D::update(float deltaTime) {
 						i == 10 ? white : black);
 	}
 
-	// add a transform so that we can see the axis
-	Gizmos::addTransform(mat4(1));
-
-	// demonstrate a few shapes
-	Gizmos::addAABBFilled(vec3(0), vec3(1), vec4(0, 0.5f, 1, 0.25f));
-	Gizmos::addSphere(vec3(5, 0, 5), 1, 8, 8, vec4(1, 0, 0, 0.5f));
-	Gizmos::addRing(vec3(5, 0, -5), 1, 1.5f, 8, vec4(0, 1, 0, 1));
-	Gizmos::addDisk(vec3(-5, 0, 5), 1, 16, vec4(1, 1, 0, 1));
-	Gizmos::addArc(vec3(-5, 0, -5), 0, 2, 1, 8, vec4(1, 0, 1, 1));
-
-	mat4 t = glm::rotate(mat4(1), time, glm::normalize(vec3(1, 1, 1)));
-	t[3] = vec4(-2, 0, 0, 1);
-	Gizmos::addCylinderFilled(vec3(0), 0.5f, 1, 5, vec4(0, 1, 1, 1), &t);
-
-	// demonstrate 2D gizmos
-	Gizmos::add2DAABB(glm::vec2(getWindowWidth() / 2, 100),
-					  glm::vec2(getWindowWidth() / 2 * (fmod(getTime(), 3.f) / 3), 20),
-					  vec4(0, 1, 1, 1));
-
 	// quit if we press escape
 	aie::Input* input = aie::Input::getInstance();
-
+	if (input->isKeyDown(aie::INPUT_KEY_D))
+	{
+		
+	}
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 }
