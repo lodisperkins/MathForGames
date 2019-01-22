@@ -1,5 +1,5 @@
 #include "Application2D.h"
-
+#include <vector2.h>
 #include "CDDS_BinaryTreesApp.h"
 int main() {
 	
@@ -8,7 +8,7 @@ int main() {
 
 	// initialise and loop
 	app->run("AIE", 1280, 720, false);
-
+	Vector2 thing;
 	// deallocation
 	delete app;
 
