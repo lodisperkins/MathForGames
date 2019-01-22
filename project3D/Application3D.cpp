@@ -51,13 +51,13 @@ vec4 green(.5f, 0.5f, 0, 1);
 	Gizmos::clear();
 	mat4 tank = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 	mat4* tankptr = &tank;
-	mat4 moveright=
+	vec4 moveright = { 4,0,0,1 };
 	mat4 cannon = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 	mat4* ptrcannon = &rotate(cannon, 90.f, vec3(0, 0, 1));
 	Gizmos::addAABBFilled(vec3(0), vec3(2,.5,2), green,tankptr);
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
-	Gizmos::addSphere(vec3(0,.8,0), 1.5, 15, 15,green);
+	Gizmos::addSphere(vec3(0,.8,0), 1.5, 15, 15,green,tankptr);
 	Gizmos::addCylinderFilled(vec3(1.5, 1.7, 0), .3, 1, 15, green, ptrcannon);
 	// draw a simple grid with gizmos
 
@@ -75,7 +75,8 @@ vec4 green(.5f, 0.5f, 0, 1);
 	aie::Input* input = aie::Input::getInstance();
 	if (input->isKeyDown(aie::INPUT_KEY_D))
 	{
-		
+		tank[3] = tank * moveright;
+	
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
