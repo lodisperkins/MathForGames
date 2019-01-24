@@ -18,5 +18,17 @@ public:
 protected:
 
 	glm::mat4	m_viewMatrix;
+	glm::mat4 tank;
+	glm::vec4 moveright;
+	glm::vec4 moveleft;
+	glm::vec4 moveForward;
+	glm::vec4 moveBackward;
+	float rotateVal;
+	float xCam = 0;
+	float zCam=10;
+	glm::mat4 cannon;
+	glm::mat4 turret;
+	glm::mat4* ptrcannon;
+	
 	glm::mat4	m_projectionMatrix;
 };

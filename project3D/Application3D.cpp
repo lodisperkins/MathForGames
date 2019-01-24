@@ -30,7 +30,9 @@ bool Application3D::startup() {
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
 										  getWindowWidth() / (float)getWindowHeight(),
 										  0.1f, 1000.f);
-
+	tank = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+	turret = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+	ptrcannon = &rotate(cannon, 90.f, vec3(0, 0, 1));
 	return true;
 }
 
@@ -43,22 +45,29 @@ void Application3D::update(float deltaTime) {
 
 	// query time since application started
 	float time = getTime();
-
+	
 	// rotate camera
 	m_viewMatrix = glm::lookAt(vec3(0,3,10),vec3(0), vec3(0, 1, 0));
 vec4 green(.5f, 0.5f, 0, 1);
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
-	mat4 tank = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+	vec3 turretPos = { tank[3].x,.8,tank[3].z };
+	vec3 cannonPos = { turret[3].x ,1.7,turret[3].z };
 	mat4* tankptr = &tank;
-	mat4 moveright=
-	mat4 cannon = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-	mat4* ptrcannon = &rotate(cannon, 90.f, vec3(0, 0, 1));
-	Gizmos::addAABBFilled(vec3(0), vec3(2,.5,2), green,tankptr);
+	turret = tank;
+	cannon[3] = turret[3];
+	mat4*turretptr = &turret;
+	moveright = { .5,0,0,1 };
+	moveleft = { -.5,0,0,1 };
+	moveForward = { 0,0,.5,1 };
+	moveBackward = { 0,0,-.5,1 };
+	
+
+	Gizmos::addAABBFilled(tank[3], vec3(2,.5,2), green,tankptr);
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
-	Gizmos::addSphere(vec3(0,.8,0), 1.5, 15, 15,green);
-	Gizmos::addCylinderFilled(vec3(1.5, 1.7, 0), .3, 1, 15, green, ptrcannon);
+	Gizmos::addSphere(turretPos, 1.5, 15, 15,green,turretptr);
+	Gizmos::addCylinderFilled(cannonPos, .3, 1, 15, green, ptrcannon);
 	// draw a simple grid with gizmos
 
 	
@@ -75,7 +84,30 @@ vec4 green(.5f, 0.5f, 0, 1);
 	aie::Input* input = aie::Input::getInstance();
 	if (input->isKeyDown(aie::INPUT_KEY_D))
 	{
-		
+		tank[3] = tank * moveright;
+	
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_A))
+	{
+		tank[3] = tank * moveleft;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_W))
+	{
+		tank[3] = tank * moveBackward;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_S))
+	{
+		tank[3] = tank * moveForward;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_L))
+	{
+		xCam++;
+		zCam++;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_J))
+	{
+		xCam--;
+		zCam--;
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
