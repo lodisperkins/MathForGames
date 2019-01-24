@@ -3,6 +3,8 @@
 #include "Font.h"
 #include "Input.h"
 
+float xpos, ypos, radius;
+
 Application2D::Application2D() {
 
 }
@@ -17,13 +19,18 @@ bool Application2D::startup() {
 
 	m_texture = new aie::Texture("./textures/numbered_grid.tga");
 	m_shipTexture = new aie::Texture("./textures/ship.png");
-	m_sonicTexture = new aie::Texture("./textures/sonic.png");
 	m_font = new aie::Font("./font/consolas.ttf", 32);
 	
 	m_cameraX = 0;
 	m_cameraY = 0;
 	m_timer = 0;
-
+	
+	
+	circlevec =  Vector2(600,400);
+	
+	xpos = 500;
+	ypos = 500;
+	radius = 3.5;
 	return true;
 }
 
@@ -35,26 +42,57 @@ void Application2D::shutdown() {
 	delete m_2dRenderer;
 }
 
+void myUpdate(aie::Input* input)
+{
+	float deltaTime;
+	input = aie::Input::getInstance();
+	if (input->isKeyDown(aie::INPUT_KEY_D))
+	{
+		
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_I))
+	{
+		radius++;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_A))
+	{
+
+	}
+}
+
 void Application2D::update(float deltaTime) {
-
+	Vector2 up= Vector2(0,1);
+	Vector2 right = Vector2(1,0);
+	Vector2 left= Vector2(-1,0);
+	Vector2 down = Vector2(0,-1);
 	m_timer += deltaTime;
-
+	ypos = 100;
 	// input example
 	aie::Input* input = aie::Input::getInstance();
-
-	// use arrow keys to move camera
-	if (input->isKeyDown(aie::INPUT_KEY_UP))
-		m_cameraY += 500.0f * deltaTime;
-
-	if (input->isKeyDown(aie::INPUT_KEY_DOWN))
-		m_cameraY -= 500.0f * deltaTime;
-
-	if (input->isKeyDown(aie::INPUT_KEY_LEFT))
-		m_cameraX -= 500.0f * deltaTime;
-
-	if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
-		m_cameraX += 500.0f * deltaTime;
-
+	if (input->isKeyDown(aie::INPUT_KEY_D))
+	{
+		circlevec= circlevec+ right;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_W))
+	{
+		circlevec = circlevec + up;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_A))
+	{
+		circlevec = circlevec + left;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_S))
+	{
+		circlevec = circlevec + down;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_I))
+	{
+		radius++;
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_U))
+	{
+		radius--;
+	}
 	// exit the application
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
@@ -71,35 +109,8 @@ void Application2D::draw() {
 	// begin drawing sprites
 	m_2dRenderer->begin();
 
-	// demonstrate animation
-	m_2dRenderer->setUVRect(int(m_timer) % 8 / 8.0f, 0, 1.f / 8, 1.f / 8);
-	m_2dRenderer->drawSprite(m_texture, 200, 200, 100, 100);
-
-	// demonstrate spinning sprite
-	m_2dRenderer->setUVRect(0,0,1,1);
-	m_2dRenderer->drawSprite(m_sonicTexture, 600, 400, 0, 0, m_timer, 1);
-
-	// draw a thin line
-	m_2dRenderer->drawLine(300, 300, 600, 400, 2, 1);
-
-	// draw a moving purple circle
-	m_2dRenderer->setRenderColour(1, 0, 1, 1);
-	m_2dRenderer->drawCircle(sin(m_timer) * 100 + 600, 150, 50);
-
-	// draw a rotating red box
-	m_2dRenderer->setRenderColour(1, 0, 0, 1);
-	m_2dRenderer->drawBox(600, 500, 60, 20, m_timer);
-
-	// draw a slightly rotated sprite with no texture, coloured yellow
-	m_2dRenderer->setRenderColour(1, 1, 0, 1);
-	m_2dRenderer->drawSprite(nullptr, 400, 400, 50, 50, 3.14159f * 0.25f, 1);
+	m_2dRenderer->drawCircle(circlevec.getX(), circlevec.getY(), radius);
 	
-	// output some text, uses the last used colour
-	char fps[32];
-	sprintf_s(fps, 32, "FPS: %i", getFPS());
-	m_2dRenderer->drawText(m_font, fps, 0, 720 - 32);
-	m_2dRenderer->drawText(m_font, "Press ESC to quit!", 0, 720 - 64);
-
 	// done drawing sprites
 	m_2dRenderer->end();
 }
