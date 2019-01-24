@@ -23,6 +23,7 @@ protected:
 	glm::vec4 moveleft;
 	glm::vec4 moveForward;
 	glm::vec4 moveBackward;
+	glm::vec3 cannonPos;
 	float rotateVal;
 	float xCam = 0;
 	float zCam=10;

@@ -32,7 +32,9 @@ bool Application3D::startup() {
 										  0.1f, 1000.f);
 	tank = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 	turret = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-	ptrcannon = &rotate(cannon, 90.f, vec3(0, 0, 1));
+	cannon = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+	turret = glm::rotate(turret, 30.f, vec3(0, 0, 1));
+	rotateVal = 0;
 	return true;
 }
 
@@ -47,22 +49,26 @@ void Application3D::update(float deltaTime) {
 	float time = getTime();
 	
 	// rotate camera
-	m_viewMatrix = glm::lookAt(vec3(0,3,10),vec3(0), vec3(0, 1, 0));
+	m_viewMatrix = glm::lookAt(vec3(0,20,3),vec3(0), vec3(0, 1, 0));
 vec4 green(.5f, 0.5f, 0, 1);
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
 	vec3 turretPos = { tank[3].x,.8,tank[3].z };
-	vec3 cannonPos = { turret[3].x ,1.7,turret[3].z };
-	mat4* tankptr = &tank;
-	turret = tank;
-	cannon[3] = turret[3];
-	mat4*turretptr = &turret;
-	moveright = { .5,0,0,1 };
-	moveleft = { -.5,0,0,1 };
-	moveForward = { 0,0,.5,1 };
-	moveBackward = { 0,0,-.5,1 };
+	turret[3] = tank[3];
 	
-
+	cannonPos = { turret[3].x+1,turret[3].y+1.75,turret[3].z };
+	cannon[1] = turret[1];
+	mat4* tankptr = &tank;
+	
+	
+	mat4*turretptr = &turret;
+	moveright = { .001,0,0,1 };
+	moveleft = { -.001,0,0,1 };
+	moveForward = { 0,0,.001,1 };
+	moveBackward = { 0,0,-.001,1 };
+	
+	cannon = turret;
+	ptrcannon = &cannon;
 	Gizmos::addAABBFilled(tank[3], vec3(2,.5,2), green,tankptr);
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
@@ -101,8 +107,7 @@ vec4 green(.5f, 0.5f, 0, 1);
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_L))
 	{
-		xCam++;
-		zCam++;
+		turret = glm::rotate(turret,0.01f, vec3(1, 0, 0));
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_J))
 	{
