@@ -19,6 +19,8 @@ protected:
 
 	glm::mat4	m_viewMatrix;
 	glm::mat4 tank;
+	glm::mat4 tank_Rot;
+	glm::mat4 tank_Trans;
 	glm::vec4 moveright;
 	glm::vec4 moveleft;
 	glm::vec4 moveForward;
@@ -28,8 +30,17 @@ protected:
 	float xCam = 0;
 	float zCam=10;
 	glm::mat4 cannon;
+	glm::mat4 cannon_Rot;
 	glm::mat4 turret;
+	glm::mat4 turret_Rot;
+	glm::mat4 turret_Trans;
+	glm::mat4 world;
 	glm::mat4* ptrcannon;
-	
+	glm::mat4* tankptr;
+	glm::mat4*turretptr;
+	glm::mat4 cannon_Trans;
+	glm::mat4 bullet;
+	glm::mat4 bullet_Trans;
+	glm::mat4*bulletptr;
 	glm::mat4	m_projectionMatrix;
 };

@@ -30,10 +30,15 @@ bool Application3D::startup() {
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
 										  getWindowWidth() / (float)getWindowHeight(),
 										  0.1f, 1000.f);
-	tank = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-	turret = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-	cannon = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-	turret = glm::rotate(turret, 30.f, vec3(0, 0, 1));
+	world = mat4(1);
+	tank_Rot = mat4(1);
+	tank_Trans = mat4(1);
+	turret_Rot = mat4(1);
+	turret_Trans = mat4(1);
+	cannon_Rot = mat4(1);
+	cannon_Rot = glm::rotate(cannon_Rot, 30.f, vec3(0, 0, 1));
+	cannon_Trans = glm::translate(mat4(1), vec3(.5, .5, 0));
+	bullet_Trans = glm::translate(mat4(1), vec3(.5, .5, 0));
 	rotateVal = 0;
 	return true;
 }
@@ -53,27 +58,21 @@ void Application3D::update(float deltaTime) {
 vec4 green(.5f, 0.5f, 0, 1);
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
-	vec3 turretPos = { tank[3].x,.8,tank[3].z };
-	turret[3] = tank[3];
+	tank = world*(tank_Trans*tank_Rot);
+	turret = tank * (turret_Trans*turret_Rot);
+	cannon = turret * (cannon_Trans*cannon_Rot);
+	bullet = cannon * bullet_Trans;
+	tankptr = &tank;
 	
-	cannonPos = { turret[3].x+1,turret[3].y+1.75,turret[3].z };
-	cannon[1] = turret[1];
-	mat4* tankptr = &tank;
-	
-	
-	mat4*turretptr = &turret;
-	moveright = { .001,0,0,1 };
-	moveleft = { -.001,0,0,1 };
-	moveForward = { 0,0,.001,1 };
-	moveBackward = { 0,0,-.001,1 };
-	
-	cannon = turret;
+	bulletptr = &bullet;
+	turretptr = &turret;
+
 	ptrcannon = &cannon;
 	Gizmos::addAABBFilled(tank[3], vec3(2,.5,2), green,tankptr);
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
-	Gizmos::addSphere(turretPos, 1.5, 15, 15,green,turretptr);
-	Gizmos::addCylinderFilled(cannonPos, .3, 1, 15, green, ptrcannon);
+	Gizmos::addSphere(turret[3], 1.5, 15, 15,green,turretptr);
+	Gizmos::addCylinderFilled(cannon[3], .3, 1, 15, green, ptrcannon);
 	// draw a simple grid with gizmos
 
 	
@@ -88,31 +87,52 @@ vec4 green(.5f, 0.5f, 0, 1);
 
 	// quit if we press escape
 	aie::Input* input = aie::Input::getInstance();
+	if (input->isKeyDown(aie::INPUT_KEY_E))
+	{
+		tank_Rot = glm::rotate(tank_Rot, 0.01f, vec3(0, 1, 0));
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_Q))
+	{
+		tank_Rot = glm::rotate(tank_Rot, -0.01f, vec3(0, 1, 0));
+	}
 	if (input->isKeyDown(aie::INPUT_KEY_D))
 	{
-		tank[3] = tank * moveright;
-	
-	}
-	if (input->isKeyDown(aie::INPUT_KEY_A))
-	{
-		tank[3] = tank * moveleft;
+		tank_Trans = glm::translate(tank_Trans, vec3(0.1, 0, 0));
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_W))
 	{
-		tank[3] = tank * moveBackward;
+		tank_Trans = glm::translate(tank_Trans, vec3(0, 0, -0.1));
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_A))
+	{
+		tank_Trans = glm::translate(tank_Trans, vec3(-0.1, 0, 0));
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_S))
 	{
-		tank[3] = tank * moveForward;
+		tank_Trans = glm::translate(tank_Trans, vec3(0, 0, 0.1));
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_L))
 	{
-		turret = glm::rotate(turret,0.01f, vec3(1, 0, 0));
+		turret_Rot = glm::rotate(turret_Rot,0.01f, vec3(0, 1, 0));
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_J))
 	{
-		xCam--;
-		zCam--;
+		turret_Rot = glm::rotate(turret_Rot, -0.01f, vec3(0, 1, 0));
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_O))
+	{
+		Gizmos::addSphere(bullet[3], .2, 15, 15, green, bulletptr);
+		bullet_Trans = glm::translate(bullet_Trans, vec3(0, rotateVal, 0));
+		if (rotateVal <= 1)
+		{
+			rotateVal+=.1;
+		}
+		else
+		{
+			rotateVal = 0;
+			bullet = cannon;
+			bullet_Trans = mat4(1);
+		}
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
