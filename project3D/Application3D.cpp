@@ -30,11 +30,18 @@ bool Application3D::startup() {
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
 										  getWindowWidth() / (float)getWindowHeight(),
 										  0.1f, 1000.f);
+	world = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 	tank = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-	turret = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+	tank_Rot = glm::rotate(tank, 0.1f, vec3(0, 1, 0));
+	turret = tank;
+	turret_Rot = glm::rotate(tank, 0.1f, vec3(0, 1, 0));
 	cannon = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-	turret = glm::rotate(turret, 30.f, vec3(0, 0, 1));
+	cannon_Rot = glm::rotate(tank, 0.1f, vec3(0, 1, 0));
+	cannon = cannon * cannon_Rot;
+	tank = tank * turret * cannon;
+	turret = turret * cannon;
 	rotateVal = 0;
+
 	return true;
 }
 
@@ -53,27 +60,24 @@ void Application3D::update(float deltaTime) {
 vec4 green(.5f, 0.5f, 0, 1);
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
-	vec3 turretPos = { tank[3].x,.8,tank[3].z };
-	turret[3] = tank[3];
 	
-	cannonPos = { turret[3].x+1,turret[3].y+1.75,turret[3].z };
-	cannon[1] = turret[1];
 	mat4* tankptr = &tank;
 	
+	mat4* cannonPtr = &cannon;
 	
 	mat4*turretptr = &turret;
-	moveright = { .001,0,0,1 };
-	moveleft = { -.001,0,0,1 };
-	moveForward = { 0,0,.001,1 };
-	moveBackward = { 0,0,-.001,1 };
+	moveright = { .01,0,0,1 };
+	moveleft = { -.01,0,0,1 };
+	moveForward = { 0,0,.01,1 };
+	moveBackward = { 0,0,-.01,1 };
 	
-	cannon = turret;
-	ptrcannon = &cannon;
+	
+	
 	Gizmos::addAABBFilled(tank[3], vec3(2,.5,2), green,tankptr);
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
-	Gizmos::addSphere(turretPos, 1.5, 15, 15,green,turretptr);
-	Gizmos::addCylinderFilled(cannonPos, .3, 1, 15, green, ptrcannon);
+	Gizmos::addSphere(turret[3], 1.5, 15, 15,green,turretptr);
+	Gizmos::addCylinderFilled(cannonPos, .3, 1, 15, green,cannonPtr );
 	// draw a simple grid with gizmos
 
 	
@@ -107,7 +111,7 @@ vec4 green(.5f, 0.5f, 0, 1);
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_L))
 	{
-		turret = glm::rotate(turret,0.01f, vec3(1, 0, 0));
+		turret = glm::rotate(turret,0.01f, vec3(0, 1, 0));
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_J))
 	{
