@@ -30,16 +30,17 @@ bool Application3D::startup() {
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
 										  getWindowWidth() / (float)getWindowHeight(),
 										  0.1f, 1000.f);
+	//initialise default values for each of the matrices
 	world = mat4(1);
 	tank_Rot = mat4(1);
 	tank_Trans = mat4(1);
 	turret_Rot = mat4(1);
 	turret_Trans = mat4(1);
-	cannon_Rot = mat4(1);
+	//Changes then orientaion of the cannon and bullet so it is positioned horizontally on the turret
 	cannon_Rot = glm::rotate(cannon_Rot, 30.f, vec3(0, 0, 1));
 	cannon_Trans = glm::translate(mat4(1), vec3(.5, .5, 0));
 	bullet_Trans = glm::translate(mat4(1), vec3(.5, .5, 0));
-	rotateVal = 0;
+	bullet_Distance = 0;
 	return true;
 }
 
@@ -58,24 +59,24 @@ void Application3D::update(float deltaTime) {
 vec4 green(.5f, 0.5f, 0, 1);
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
+	//Updates the position and orientation of the matrices while respecting the matrix hierarchy
 	tank = world*(tank_Trans*tank_Rot);
 	turret = tank * (turret_Trans*turret_Rot);
 	cannon = turret * (cannon_Trans*cannon_Rot);
 	bullet = cannon * bullet_Trans;
+	//assigns the pointers to their corresponding matrix
 	tankptr = &tank;
-	
 	bulletptr = &bullet;
 	turretptr = &turret;
-
 	ptrcannon = &cannon;
+	//draws the shapes for the tank
 	Gizmos::addAABBFilled(tank[3], vec3(2,.5,2), green,tankptr);
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
 	Gizmos::addSphere(turret[3], 1.5, 15, 15,green,turretptr);
 	Gizmos::addCylinderFilled(cannon[3], .3, 1, 15, green, ptrcannon);
-	// draw a simple grid with gizmos
 
-	
+	// draw a simple grid with gizmos
 	for (int i = 0; i < 21; ++i) {
 		Gizmos::addLine(vec3(-10 + i, 0, 10),
 						vec3(-10 + i, 0, -10),
@@ -85,8 +86,9 @@ vec4 green(.5f, 0.5f, 0, 1);
 						i == 10 ? white : black);
 	}
 
-	// quit if we press escape
+	
 	aie::Input* input = aie::Input::getInstance();
+	//rotates the tank based on the button pressed
 	if (input->isKeyDown(aie::INPUT_KEY_E))
 	{
 		tank_Rot = glm::rotate(tank_Rot, 0.01f, vec3(0, 1, 0));
@@ -95,6 +97,7 @@ vec4 green(.5f, 0.5f, 0, 1);
 	{
 		tank_Rot = glm::rotate(tank_Rot, -0.01f, vec3(0, 1, 0));
 	}
+	//moves the tank in the position desired by the user based on the button pressed
 	if (input->isKeyDown(aie::INPUT_KEY_D))
 	{
 		tank_Trans = glm::translate(tank_Trans, vec3(0.1, 0, 0));
@@ -111,6 +114,7 @@ vec4 green(.5f, 0.5f, 0, 1);
 	{
 		tank_Trans = glm::translate(tank_Trans, vec3(0, 0, 0.1));
 	}
+	//rotates the turret in either a counter clockwise or a clockwise direction
 	if (input->isKeyDown(aie::INPUT_KEY_L))
 	{
 		turret_Rot = glm::rotate(turret_Rot,0.01f, vec3(0, 1, 0));
@@ -119,21 +123,23 @@ vec4 green(.5f, 0.5f, 0, 1);
 	{
 		turret_Rot = glm::rotate(turret_Rot, -0.01f, vec3(0, 1, 0));
 	}
+	//draws a sphere representing the bullet and translates it until its distance is 1 unit away from the cannon
 	if (input->isKeyDown(aie::INPUT_KEY_O))
 	{
 		Gizmos::addSphere(bullet[3], .2, 15, 15, green, bulletptr);
-		bullet_Trans = glm::translate(bullet_Trans, vec3(0, rotateVal, 0));
-		if (rotateVal <= 1)
+		bullet_Trans = glm::translate(bullet_Trans, vec3(0, bullet_Distance, 0));
+		if (bullet_Distance <= 1)
 		{
-			rotateVal+=.1;
+			bullet_Distance+=.1;
 		}
 		else
 		{
-			rotateVal = 0;
+			bullet_Distance = 0;
 			bullet = cannon;
 			bullet_Trans = mat4(1);
 		}
 	}
+	// quit if we press escape
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 }

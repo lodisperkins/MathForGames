@@ -16,31 +16,30 @@ public:
 	virtual void draw();
 
 protected:
-
+	// project3d matrices
+	glm::mat4	m_projectionMatrix;
 	glm::mat4	m_viewMatrix;
-	glm::mat4 tank;
-	glm::mat4 tank_Rot;
-	glm::mat4 tank_Trans;
-	glm::vec4 moveright;
-	glm::vec4 moveleft;
-	glm::vec4 moveForward;
-	glm::vec4 moveBackward;
-	glm::vec3 cannonPos;
-	float rotateVal;
-	float xCam = 0;
-	float zCam=10;
-	glm::mat4 cannon;
-	glm::mat4 cannon_Rot;
-	glm::mat4 turret;
-	glm::mat4 turret_Rot;
-	glm::mat4 turret_Trans;
+	//identity matrix
 	glm::mat4 world;
-	glm::mat4* ptrcannon;
+	//Tank matrices in decending order 
+	glm::mat4 tank;
+	glm::mat4 turret;
+	glm::mat4 cannon;
+	glm::mat4 bullet;
+	//Translation matrices responsible for movement of each part of the tank
+	glm::mat4 tank_Trans;
+	glm::mat4 turret_Trans;
+	glm::mat4 cannon_Trans;
+	glm::mat4 bullet_Trans;
+	//Rotation matrices responsible for rotation of each part of the tank
+	glm::mat4 tank_Rot;
+	glm::mat4 turret_Rot;
+	glm::mat4 cannon_Rot;
+	//Pointers for each matrix to be used as the matrix pointer argument for the gizmos draw shape functions
 	glm::mat4* tankptr;
 	glm::mat4*turretptr;
-	glm::mat4 cannon_Trans;
-	glm::mat4 bullet;
-	glm::mat4 bullet_Trans;
+	glm::mat4* ptrcannon;
 	glm::mat4*bulletptr;
-	glm::mat4	m_projectionMatrix;
+	//Value to track the distance of the bullet so that despawns at a certain point
+	float bullet_Distance;
 };
